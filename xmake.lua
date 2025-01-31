@@ -1,4 +1,5 @@
 add_rules("mode.debug", "mode.release")
+add_cxxflags("/utf-8")
 
 target("flags")
     add_rules("qt.widgetapp")
@@ -6,3 +7,5 @@ target("flags")
     add_files("src/*.cpp")
     -- add files with Q_OBJECT meta (only for qt.moc)
     add_files("src/MainWindow.h")
+    add_files("src/StarItem.h")
+    add_files("src/RectItem.h")

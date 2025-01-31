@@ -17,11 +17,14 @@ private slots:
     void drawChinaFlag();
     void drawAmericaFlag();
 
+    void updateDesc(const QString& text);
+    void clearDesc();
+
 private:
     QGraphicsView* view;
     QGraphicsScene* scene;
     QLabel* name;
-    QLabel* elem;
+    QLabel* desc;
 };
 
 #endif // MAINWINDOW_H
