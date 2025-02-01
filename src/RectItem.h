@@ -10,8 +10,9 @@ class RectItem : public QObject, public QGraphicsItem
     Q_OBJECT
 
 public:
-    RectItem(const QPointF& center, qint32 width, qint32 height, const QColor& fillColor, const QString& text)
-        : center(center)
+    RectItem(qreal x, qreal y, qreal width, qreal height, const QColor& fillColor, const QString& text)
+        : x(x)
+        , y(y)
         , width(width)
         , height(height)
         , fillColor(fillColor)
@@ -22,17 +23,14 @@ public:
 
     QRectF boundingRect() const override
     {
-        return QRectF(center.x() - width / 2, center.y() - height / 2, width, height);
+        return QRectF(x, y, width, height);
     }
 
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
     {
         painter->setPen(Qt::NoPen);
         painter->setBrush(fillColor);
-        painter->save();
-        painter->translate(center);
-        painter->drawRect(-width / 2, -height / 2, width, height);
-        painter->restore();
+        painter->drawRect(QRectF(x, y, width, height));
     }
 
 signals:
@@ -51,9 +49,10 @@ protected:
     }
 
 private:
-    QPointF center;
-    qint32 width;
-    qint32 height;
+    qreal x;
+    qreal y;
+    qreal width;
+    qreal height;
     QColor fillColor;
     QString text;
 };

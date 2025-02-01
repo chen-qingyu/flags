@@ -57,7 +57,7 @@ void MainWindow::drawChinaFlag()
     const int HEIGHT = 20; // 旗面高度
 
     // 五角星中心点 (Center) 坐标 (以场景坐标轴为准：原点为中心，X轴向右，Y轴向下)
-    QList<QPointF> C = {
+    const QList<QPointF> C = {
         {-10, -5}, // 主星中心点
         {-5, -8},  // 纵向第一个小五角星中心点
         {-3, -6},  // 纵向第二个小五角星中心点
@@ -66,10 +66,10 @@ void MainWindow::drawChinaFlag()
     };
 
     // 五角星外接圆半径 (Radius)
-    QList R = {3, 1, 1, 1, 1};
+    const QList R = {3, 1, 1, 1, 1};
 
     // 五角星上顶点过该五角星中心到主星中心的连线与y轴负方向的顺时针夹角弧度 (Angle)
-    QList A = {
+    const QList A = {
         0.0,
         M_PI_2 + qAtan2(3.0, -5.0),
         M_PI_2 + qAtan2(1.0, -7.0),
@@ -78,14 +78,14 @@ void MainWindow::drawChinaFlag()
     };
 
     // 颜色 https://www.schemecolor.com/peoples-republic-of-china-flag-colors.php
-    QMap<QString, QString> colors = {{"Maximum Red", "#DE2910"}, {"Golden Yellow", "#FFDE00"}};
+    const QMap<QString, QString> COLOR = {{"Maximum Red", "#DE2910"}, {"Golden Yellow", "#FFDE00"}};
 
-    RectItem* rect = new RectItem(QPointF(0, 0), WIDTH, HEIGHT, colors["Maximum Red"], "红色旗面象征革命");
+    RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["Maximum Red"], "红色旗面象征革命");
     connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
     connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
     scene->addItem(rect);
 
-    QList desc = {
+    const QList desc = {
         "大五角星象征中国共产党",
         "第一颗小五角星象征工人阶级",
         "第二颗小五角星象征农民阶级",
@@ -94,7 +94,7 @@ void MainWindow::drawChinaFlag()
     };
     for (int i = 0; i < C.size(); i++)
     {
-        StarItem* star = new StarItem(C[i], R[i], colors["Golden Yellow"], A[i], desc[i]);
+        StarItem* star = new StarItem(C[i], R[i], COLOR["Golden Yellow"], A[i], desc[i]);
         connect(star, &StarItem::mouseEntered, this, &MainWindow::updateDesc);
         connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
         scene->addItem(star);
@@ -103,14 +103,67 @@ void MainWindow::drawChinaFlag()
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
+// 依据 https://en.wikipedia.org/wiki/Flag_of_the_United_States 绘制美国国旗。
 void MainWindow::drawAmericaFlag()
 {
     scene->clear();
+    name->setText("美利坚合众国国旗");
 
-    name->setText("The Flag of the United States of America");
-    desc->setText("red and white stripes");
+    // 以标准国旗尺寸纵向38/横向20等分方格边长为一个单位
+    const int WIDTH = 38;  // 旗面宽度
+    const int HEIGHT = 20; // 旗面高度
 
-    scene->update();
+    // 条纹 (Stripe) 高度 (Height)
+    const double S_H = HEIGHT / 13.0;
+
+    // 蓝色横幅 (Banner) 部分
+    const double B_W = WIDTH * (2.0 / 5.0);   // 宽度 (Width)
+    const double B_H = HEIGHT * (7.0 / 13.0); // 高度 (Height)
+    const double B_V = B_W / 12.0;            // 纵向 (Vertical) 等分线
+    const double B_T = B_H / 10.0;            // 横向 (Transverse) 等分线
+
+    // 横纵等分线交点 (Intersection)
+    QList<QPointF> B_I;
+    int cnt = 0;
+    for (double y = B_T; y < B_H; y += B_T)
+    {
+        for (double x = B_V; x < B_W; x += B_V)
+        {
+            if (++cnt % 2 == 1)
+            {
+                B_I.append(QPointF(-WIDTH / 2 + x, -HEIGHT / 2 + y));
+            }
+        }
+    }
+
+    // 五角星外接圆半径 (Radius)
+    const double R = 0.0616 * HEIGHT / 2;
+
+    // 颜色 https://www.schemecolor.com/united-states-of-america-flag-colors.php
+    const QMap<QString, QString> COLOR = {{"American Blue", "#3C3B6E"}, {"White", "#FFFFFF"}, {"American Red", "#B22234"}};
+
+    for (int i = 0; i < 13; i++)
+    {
+        RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2 + S_H * i, WIDTH, S_H, COLOR[i % 2 ? "White" : "American Red"], (i % 2 ? "白色代表纯洁和天真" : "红色代表坚韧和勇敢"));
+        connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
+        connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
+        scene->addItem(rect);
+    }
+
+    RectItem* banner = new RectItem(-WIDTH / 2, -HEIGHT / 2, B_W, B_H, COLOR["American Blue"], "蓝色代表警惕、毅力和正义");
+    connect(banner, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
+    connect(banner, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
+    scene->addItem(banner);
+
+    for (auto c : B_I)
+    {
+        StarItem* star = new StarItem(c, R, COLOR["White"], 0, "50颗白星象征50个州");
+        connect(star, &StarItem::mouseEntered, this, &MainWindow::updateDesc);
+        connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
+        scene->addItem(star);
+    }
+
+    view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void MainWindow::updateDesc(const QString& text)
