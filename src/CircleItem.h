@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QtMath>
 
+#include "MainWindow.h"
+
 class CircleItem : public QObject, public QGraphicsItem
 {
     Q_OBJECT
@@ -17,6 +19,8 @@ public:
         , text(text)
     {
         this->setAcceptHoverEvents(true);
+        this->connect(this, &CircleItem::mouseEntered, MainWindow::instance(), &MainWindow::updateDesc);
+        this->connect(this, &CircleItem::mouseLeft, MainWindow::instance(), &MainWindow::clearDesc);
     }
 
     QRectF boundingRect() const override

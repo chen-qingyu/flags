@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QtMath>
 
+#include "MainWindow.h"
+
 class RectItem : public QObject, public QGraphicsItem
 {
     Q_OBJECT
@@ -19,6 +21,8 @@ public:
         , text(text)
     {
         this->setAcceptHoverEvents(true);
+        this->connect(this, &RectItem::mouseEntered, MainWindow::instance(), &MainWindow::updateDesc);
+        this->connect(this, &RectItem::mouseLeft, MainWindow::instance(), &MainWindow::clearDesc);
     }
 
     QRectF boundingRect() const override

@@ -13,20 +13,25 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = nullptr);
 
+    static const MainWindow* instance();
+
+public slots:
+    void updateDesc(const QString& text);
+    void clearDesc();
+
 private slots:
     void drawChinaFlag();
     void drawAmericaFlag();
     void drawJapanFlag();
     void drawRussiaFlag();
 
-    void updateDesc(const QString& text);
-    void clearDesc();
-
 private:
     QGraphicsView* view;
     QGraphicsScene* scene;
     QLabel* name;
     QLabel* desc;
+
+    static MainWindow* window;
 };
 
 #endif // MAINWINDOW_H

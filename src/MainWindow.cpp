@@ -8,6 +8,8 @@
 #include "RectItem.h"
 #include "StarItem.h"
 
+MainWindow* MainWindow::window = nullptr;
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
 {
@@ -47,6 +49,8 @@ MainWindow::MainWindow(QWidget* parent)
     desc = new QLabel("");
     desc->setFixedHeight(16);
     layout->addWidget(desc);
+
+    window = this;
 }
 
 // 依据中华人民共和国国家标准GB 12982-2004《国旗》和 https://en.wikipedia.org/wiki/Flag_of_China 绘制五星红旗。
@@ -83,10 +87,7 @@ void MainWindow::drawChinaFlag()
     // 颜色 https://www.schemecolor.com/peoples-republic-of-china-flag-colors.php
     const QMap<QString, QString> COLOR = {{"Maximum Red", "#DE2910"}, {"Golden Yellow", "#FFDE00"}};
 
-    RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["Maximum Red"], "红色旗面象征革命");
-    connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
-    connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
-    scene->addItem(rect);
+    scene->addItem(new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["Maximum Red"], "红色旗面象征革命"));
 
     const QList descs = {
         "大五角星象征中国共产党",
@@ -97,10 +98,7 @@ void MainWindow::drawChinaFlag()
     };
     for (int i = 0; i < C.size(); i++)
     {
-        StarItem* star = new StarItem(C[i], R[i], COLOR["Golden Yellow"], A[i], descs[i]);
-        connect(star, &StarItem::mouseEntered, this, &MainWindow::updateDesc);
-        connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
-        scene->addItem(star);
+        scene->addItem(new StarItem(C[i], R[i], COLOR["Golden Yellow"], A[i], descs[i]));
     }
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
@@ -147,23 +145,14 @@ void MainWindow::drawAmericaFlag()
 
     for (int i = 0; i < 13; i++)
     {
-        RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2 + S_H * i, WIDTH, S_H, COLOR[i % 2 ? "White" : "American Red"], (i % 2 ? "白色代表纯洁和天真" : "红色代表坚韧和勇敢"));
-        connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
-        connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
-        scene->addItem(rect);
+        scene->addItem(new RectItem(-WIDTH / 2, -HEIGHT / 2 + S_H * i, WIDTH, S_H, COLOR[i % 2 ? "White" : "American Red"], (i % 2 ? "白色代表纯洁和天真" : "红色代表坚韧和勇敢")));
     }
 
-    RectItem* banner = new RectItem(-WIDTH / 2, -HEIGHT / 2, B_W, B_H, COLOR["American Blue"], "蓝色代表警惕、毅力和正义");
-    connect(banner, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
-    connect(banner, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
-    scene->addItem(banner);
+    scene->addItem(new RectItem(-WIDTH / 2, -HEIGHT / 2, B_W, B_H, COLOR["American Blue"], "蓝色代表警惕、毅力和正义"));
 
     for (auto c : B_I)
     {
-        StarItem* star = new StarItem(c, R, COLOR["White"], 0, "50颗白星象征50个州");
-        connect(star, &StarItem::mouseEntered, this, &MainWindow::updateDesc);
-        connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
-        scene->addItem(star);
+        scene->addItem(new StarItem(c, R, COLOR["White"], 0, "50颗白星象征50个州"));
     }
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
@@ -184,15 +173,9 @@ void MainWindow::drawJapanFlag()
     // 颜色 https://www.schemecolor.com/japan-flag-colors.php
     const QMap<QString, QString> COLOR = {{"White", "#FFFFFF"}, {"Crimson Glory", "#BC002D"}};
 
-    RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["White"], "白色衬底象征着纯洁");
-    connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
-    connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
-    scene->addItem(rect);
+    scene->addItem(new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["White"], "白色衬底象征着纯洁"));
 
-    CircleItem* circle = new CircleItem(QPointF(0, 0), R, COLOR["Crimson Glory"], "红日居中象征着忠诚");
-    connect(circle, &CircleItem::mouseEntered, this, &MainWindow::updateDesc);
-    connect(circle, &CircleItem::mouseLeft, this, &MainWindow::clearDesc);
-    scene->addItem(circle);
+    scene->addItem(new CircleItem(QPointF(0, 0), R, COLOR["Crimson Glory"], "红日居中象征着忠诚"));
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
@@ -216,10 +199,7 @@ void MainWindow::drawRussiaFlag()
     };
     for (int i = 0; i < 3; i++)
     {
-        RectItem* rect = new RectItem(-WIDTH / 2.0, -HEIGHT / 2.0 + i * HEIGHT / 3.0, WIDTH, HEIGHT / 3.0, COLOR[i].second, descs[i]);
-        connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
-        connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
-        scene->addItem(rect);
+        scene->addItem(new RectItem(-WIDTH / 2.0, -HEIGHT / 2.0 + i * HEIGHT / 3.0, WIDTH, HEIGHT / 3.0, COLOR[i].second, descs[i]));
     }
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
@@ -233,4 +213,9 @@ void MainWindow::updateDesc(const QString& text)
 void MainWindow::clearDesc()
 {
     desc->clear();
+}
+
+const MainWindow* MainWindow::instance()
+{
+    return window;
 }
