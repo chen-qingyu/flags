@@ -24,6 +24,7 @@ private slots:
     void drawAmericaFlag();
     void drawJapanFlag();
     void drawRussiaFlag();
+    void drawUkraineFlag();
 
 private:
     QGraphicsView* view;

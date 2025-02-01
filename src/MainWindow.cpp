@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget* parent)
         std::pair{new QPushButton("美国国旗"), &MainWindow::drawAmericaFlag},
         std::pair{new QPushButton("日本国旗"), &MainWindow::drawJapanFlag},
         std::pair{new QPushButton("俄罗斯国旗"), &MainWindow::drawRussiaFlag},
+        std::pair{new QPushButton("乌克兰国旗"), &MainWindow::drawUkraineFlag},
     };
     for (int i = 0; i < buttons.size(); i++)
     {
@@ -201,6 +202,24 @@ void MainWindow::drawRussiaFlag()
     {
         scene->addItem(new RectItem(-WIDTH / 2.0, -HEIGHT / 2.0 + i * HEIGHT / 3.0, WIDTH, HEIGHT / 3.0, COLOR[i].second, descs[i]));
     }
+
+    view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+// 依据 https://en.wikipedia.org/wiki/Flag_of_Ukraine 绘制乌克兰国旗。
+void MainWindow::drawUkraineFlag()
+{
+    scene->clear();
+    name->setText("乌克兰国旗");
+
+    const int WIDTH = 30;  // 旗面宽度
+    const int HEIGHT = 20; // 旗面高度
+
+    // 颜色 https://www.schemecolor.com/ukraine-flag-colors.php
+    const QList<QPair<QString, QString>> COLOR = {{"Sapphire", "#005BBB"}, {"Cyber Yellow", "#FFD500"}};
+
+    scene->addItem(new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT / 2, COLOR[0].second, "蓝色代表天空，象征着自由"));
+    scene->addItem(new RectItem(-WIDTH / 2, 0, WIDTH, HEIGHT / 2, COLOR[1].second, "黄色代表麦田，象征着繁荣"));
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
