@@ -16,6 +16,7 @@ public:
 private slots:
     void drawChinaFlag();
     void drawAmericaFlag();
+    void drawJapanFlag();
 
     void updateDesc(const QString& text);
     void clearDesc();

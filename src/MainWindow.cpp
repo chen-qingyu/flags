@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "CircleItem.h"
 #include "RectItem.h"
 #include "StarItem.h"
 
@@ -19,6 +20,7 @@ MainWindow::MainWindow(QWidget* parent)
     auto buttons = QList{
         std::pair{new QPushButton("中国国旗"), &MainWindow::drawChinaFlag},
         std::pair{new QPushButton("美国国旗"), &MainWindow::drawAmericaFlag},
+        std::pair{new QPushButton("日本国旗"), &MainWindow::drawJapanFlag},
     };
     for (int i = 0; i < buttons.size(); i++)
     {
@@ -114,20 +116,20 @@ void MainWindow::drawAmericaFlag()
     const int HEIGHT = 20; // 旗面高度
 
     // 条纹 (Stripe) 高度 (Height)
-    const double S_H = HEIGHT / 13.0;
+    const qreal S_H = HEIGHT / 13.0;
 
     // 蓝色横幅 (Banner) 部分
-    const double B_W = WIDTH * (2.0 / 5.0);   // 宽度 (Width)
-    const double B_H = HEIGHT * (7.0 / 13.0); // 高度 (Height)
-    const double B_V = B_W / 12.0;            // 纵向 (Vertical) 等分线
-    const double B_T = B_H / 10.0;            // 横向 (Transverse) 等分线
+    const qreal B_W = WIDTH * (2.0 / 5.0);   // 宽度 (Width)
+    const qreal B_H = HEIGHT * (7.0 / 13.0); // 高度 (Height)
+    const qreal B_V = B_W / 12.0;            // 纵向 (Vertical) 等分线
+    const qreal B_T = B_H / 10.0;            // 横向 (Transverse) 等分线
 
     // 横纵等分线交点 (Intersection)
     QList<QPointF> B_I;
     int cnt = 0;
-    for (double y = B_T; y < B_H; y += B_T)
+    for (qreal y = B_T; y < B_H; y += B_T)
     {
-        for (double x = B_V; x < B_W; x += B_V)
+        for (qreal x = B_V; x < B_W; x += B_V)
         {
             if (++cnt % 2 == 1)
             {
@@ -137,7 +139,7 @@ void MainWindow::drawAmericaFlag()
     }
 
     // 五角星外接圆半径 (Radius)
-    const double R = 0.0616 * HEIGHT / 2;
+    const qreal R = 0.0616 * HEIGHT / 2;
 
     // 颜色 https://www.schemecolor.com/united-states-of-america-flag-colors.php
     const QMap<QString, QString> COLOR = {{"American Blue", "#3C3B6E"}, {"White", "#FFFFFF"}, {"American Red", "#B22234"}};
@@ -162,6 +164,34 @@ void MainWindow::drawAmericaFlag()
         connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
         scene->addItem(star);
     }
+
+    view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+// 依据 https://en.wikipedia.org/wiki/Flag_of_Japan 绘制日本国旗。
+void MainWindow::drawJapanFlag()
+{
+    scene->clear();
+    name->setText("日章旗");
+
+    const int WIDTH = 30;  // 旗面宽度
+    const int HEIGHT = 20; // 旗面高度
+
+    // 中心圆半径 (Radius)
+    const qreal R = HEIGHT * (3.0 / 5.0) / 2.0;
+
+    // 颜色 https://www.schemecolor.com/japan-flag-colors.php
+    const QMap<QString, QString> COLOR = {{"White", "#FFFFFF"}, {"Crimson Glory", "#BC002D"}};
+
+    RectItem* rect = new RectItem(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT, COLOR["White"], "白色衬底象征着纯洁");
+    connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
+    connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
+    scene->addItem(rect);
+
+    CircleItem* circle = new CircleItem(QPointF(0, 0), R, COLOR["Crimson Glory"], "红日居中象征着忠诚");
+    connect(circle, &CircleItem::mouseEntered, this, &MainWindow::updateDesc);
+    connect(circle, &CircleItem::mouseLeft, this, &MainWindow::clearDesc);
+    scene->addItem(circle);
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
