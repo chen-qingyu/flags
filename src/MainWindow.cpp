@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
         std::pair{new QPushButton("中国国旗"), &MainWindow::drawChinaFlag},
         std::pair{new QPushButton("美国国旗"), &MainWindow::drawAmericaFlag},
         std::pair{new QPushButton("日本国旗"), &MainWindow::drawJapanFlag},
+        std::pair{new QPushButton("俄罗斯国旗"), &MainWindow::drawRussiaFlag},
     };
     for (int i = 0; i < buttons.size(); i++)
     {
@@ -87,7 +88,7 @@ void MainWindow::drawChinaFlag()
     connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
     scene->addItem(rect);
 
-    const QList desc = {
+    const QList descs = {
         "大五角星象征中国共产党",
         "第一颗小五角星象征工人阶级",
         "第二颗小五角星象征农民阶级",
@@ -96,7 +97,7 @@ void MainWindow::drawChinaFlag()
     };
     for (int i = 0; i < C.size(); i++)
     {
-        StarItem* star = new StarItem(C[i], R[i], COLOR["Golden Yellow"], A[i], desc[i]);
+        StarItem* star = new StarItem(C[i], R[i], COLOR["Golden Yellow"], A[i], descs[i]);
         connect(star, &StarItem::mouseEntered, this, &MainWindow::updateDesc);
         connect(star, &StarItem::mouseLeft, this, &MainWindow::clearDesc);
         scene->addItem(star);
@@ -192,6 +193,34 @@ void MainWindow::drawJapanFlag()
     connect(circle, &CircleItem::mouseEntered, this, &MainWindow::updateDesc);
     connect(circle, &CircleItem::mouseLeft, this, &MainWindow::clearDesc);
     scene->addItem(circle);
+
+    view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+// 依据 https://en.wikipedia.org/wiki/Flag_of_Russia 绘制俄罗斯国旗。
+void MainWindow::drawRussiaFlag()
+{
+    scene->clear();
+    name->setText("俄罗斯联邦国旗");
+
+    const int WIDTH = 30;  // 旗面宽度
+    const int HEIGHT = 20; // 旗面高度
+
+    // 颜色 https://www.schemecolor.com/russia-flag-colors.php
+    const QList<QPair<QString, QString>> COLOR = {{"White", "#FFFFFF"}, {"Dark Powder Blue", "#0033A0"}, {"Maximum Red", "#DA291C"}};
+
+    const QList descs = {
+        "白色代表寒带，一年四季白雪飘飘，象征着无限的自由",
+        "蓝色代表亚寒带，象征着俄罗斯丰富的自然资源",
+        "红色代表温带，象征着俄罗斯对整个人类文明的贡献",
+    };
+    for (int i = 0; i < 3; i++)
+    {
+        RectItem* rect = new RectItem(-WIDTH / 2.0, -HEIGHT / 2.0 + i * HEIGHT / 3.0, WIDTH, HEIGHT / 3.0, COLOR[i].second, descs[i]);
+        connect(rect, &RectItem::mouseEntered, this, &MainWindow::updateDesc);
+        connect(rect, &RectItem::mouseLeft, this, &MainWindow::clearDesc);
+        scene->addItem(rect);
+    }
 
     view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
