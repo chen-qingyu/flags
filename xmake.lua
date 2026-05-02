@@ -1,12 +1,10 @@
+set_project("flags")
+set_languages("c++20")
+set_encodings("utf-8")
+
 add_rules("mode.debug", "mode.release")
-add_cxxflags("/utf-8")
 
 target("flags")
     add_rules("qt.widgetapp")
     add_headerfiles("src/*.h")
-    add_files("src/*.cpp")
-    -- add files with Q_OBJECT meta (only for qt.moc)
-    add_files("src/MainWindow.h")
-    add_files("src/StarItem.h")
-    add_files("src/RectItem.h")
-    add_files("src/CircleItem.h")
+    add_files("src/*.cpp","src/*.h") -- add header files for qt.moc
